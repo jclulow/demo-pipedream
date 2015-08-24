@@ -1,0 +1,29 @@
+{ "name": "Simple Pipe; Balanced Input & Output", "sims":
+[
+	{
+		"name": "input",
+		"type": "readable",
+		"charge_per_cycle": 20,
+		"charge": 0,
+		"buffer_max": 4,
+		"buffer_out": [],
+		"active": null
+	},
+	{
+		"type": "pipe",
+		"from": "input",
+		"to": "output",
+		"charge": 0,
+		"charge_per_cycle": 50,
+		"active": null
+	},
+	{
+		"name": "output",
+		"type": "writable",
+		"charge_per_cycle": 20,
+		"charge": 100,
+		"buffer_max": 4,
+		"buffer_in": [],
+		"active": null
+	}
+] }

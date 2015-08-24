@@ -1,0 +1,46 @@
+{ "name": "Runaway Classical EventEmitter", "sims":
+[
+	{
+		"name": "input",
+		"type": "eventemitter",
+		"charge_per_cycle": 100,
+		"charge": 0,
+		"active": null,
+		"remain": 100
+	},
+        {
+		"type": "listener",
+		"from": "input",
+		"to": "worker",
+		"charge": 0,
+		"charge_per_cycle": 100,
+		"active": null
+	},
+	{
+		"name": "worker",
+		"type": "array",
+		"charge_per_cycle": 1,
+		"charge": 100,
+		"buffer_max": 32,
+		"buffer_in": [],
+		"buffer_out": [],
+		"active": null
+	},
+        {
+		"type": "call",
+		"from": "worker",
+		"to": "res",
+		"charge": 0,
+		"charge_per_cycle": 15,
+		"active": null
+	},
+	{
+		"name": "res",
+		"type": "writable",
+		"charge_per_cycle": 33,
+		"charge": 0,
+		"buffer_max": 10,
+		"buffer_in": [],
+		"active": null
+	}
+] }

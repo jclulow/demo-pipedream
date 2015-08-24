@@ -1,0 +1,46 @@
+{ "name": "Classical EventEmitter", "sims":
+[
+	{
+		"name": "backend",
+		"type": "eventemitter",
+		"charge_per_cycle": 33,
+		"charge": 0,
+		"active": null,
+		"remain": 16
+	},
+        {
+		"type": "listener",
+		"from": "backend",
+		"to": "data",
+		"charge": 0,
+		"charge_per_cycle": 25,
+		"active": null
+	},
+	{
+		"name": "data",
+		"type": "array",
+		"charge_per_cycle": 1,
+		"charge": 100,
+		"buffer_max": 32,
+		"buffer_in": [],
+		"buffer_out": [],
+		"active": null
+	},
+        {
+		"type": "call",
+		"from": "data",
+		"to": "res",
+		"charge": 0,
+		"charge_per_cycle": 15,
+		"active": null
+	},
+	{
+		"name": "res",
+		"type": "writable",
+		"charge_per_cycle": 33,
+		"charge": 0,
+		"buffer_max": 10,
+		"buffer_in": [],
+		"active": null
+	}
+] }

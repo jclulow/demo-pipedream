@@ -1,0 +1,29 @@
+{ "name": "Simple Pipe; Slow Output", "sims":
+[
+	{
+		"name": "diskfile",
+		"type": "readable",
+		"charge_per_cycle": 50,
+		"charge": 0,
+		"buffer_max": 8,
+		"buffer_out": [],
+		"active": null
+	},
+	{
+		"type": "pipe",
+		"from": "diskfile",
+		"to": "manta",
+		"charge": 0,
+		"charge_per_cycle": 25,
+		"active": null
+	},
+	{
+		"name": "manta",
+		"type": "writable",
+		"charge_per_cycle": 5,
+		"charge": 100,
+		"buffer_max": 8,
+		"buffer_in": [],
+		"active": null
+	}
+] }

@@ -1,0 +1,47 @@
+{ "name": "Slow Transform", "sims":
+[
+	{
+		"name": "zonelist",
+		"type": "readable",
+		"charge_per_cycle": 20,
+		"charge": 0,
+		"buffer_max": 8,
+		"buffer_out": [],
+		"active": null
+	},
+	{
+		"type": "pipe",
+		"from": "zonelist",
+		"to": "xmlparse",
+		"charge": 0,
+		"charge_per_cycle": 25,
+		"active": null
+	},
+	{
+		"name": "xmlparse",
+		"type": "transform",
+		"charge_per_cycle": 5,
+		"charge": 100,
+		"buffer_max": 4,
+		"buffer_in": [],
+		"buffer_out": [],
+		"active": null
+	},
+	{
+		"type": "pipe",
+		"from": "xmlparse",
+		"to": "stdout",
+		"charge": 0,
+		"charge_per_cycle": 25,
+		"active": null
+	},
+	{
+		"name": "stdout",
+		"type": "writable",
+		"charge_per_cycle": 20,
+		"charge": 0,
+		"buffer_max": 8,
+		"buffer_in": [],
+		"active": null
+	}
+] }
