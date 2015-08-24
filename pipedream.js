@@ -49,11 +49,11 @@ var PALETTE_DARK = {
 };
 var PALETTE_LIGHT = {
 	pipe_line: 243,
-	at_colour: 51,
+	at_colour: 88,
 	class_label: 55,
 	class_status: 202,
 	joyent: 208,
-	asterisks: 45,
+	asterisks: 21,
 	pipe_label: 19,
 	item_colours: [ 52, 53, 19, 88, 124, 91, 235, 239, 94, 17, 28, 202,
 	    204 ],
