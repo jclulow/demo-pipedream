@@ -521,7 +521,7 @@ redraw()
 
 
 	} else if (TRANSITION) {
-		draw_string(f, 2, f.f_h - 2, nm);
+		draw_string(f, 2, f.f_h - 2, nm || '');
 
 	} else if (SHOW_SOURCE) {
 		f = INPROG = create_frame(f.f_w, f.f_h);
@@ -553,13 +553,20 @@ redraw()
 	} else {
 		var total = width_total(SIM.sims);
 
-		var w = (f.f_w - total - 1) / total;
+		var w = f.f_w / total - 0.4;
+		var sofar = 0;
 
 		var y = 5;
 		var x = 1;
 		for (var i = 0; i < SIM.sims.length; i++) {
 			var s = SIM.sims[i];
 			var ww = Math.floor(width_factor(s.type) * w);
+
+			if (i === SIM.sims.length - 1) {
+				ww = f.f_w - sofar - 2;
+			} else {
+				sofar += ww + 1;
+			}
 
 			switch (s.type) {
 			case 'readable':
