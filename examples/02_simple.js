@@ -1,11 +1,13 @@
 var input = fs.createReadStream('input.txt');
-var output = fs.createWriteStream('output.txt');
 
-input.pipe(output);
+var data = '';
+input.on('readable', function () {
+    var d;
+    while ((d = input.read()) !== null) {
+        data += d.toString();
+    }
+});
 
-input.on('end', function () { ... });
-output.on('finish', function () { ...  });
-
-output.on('data', function (d) {
-    console.log('read %d bytes of data', d.length);
+input.on('end', function () {
+    console.log('%s', data);
 });

@@ -3,7 +3,7 @@
 	{
 		"name": "input",
 		"type": "eventemitter",
-		"charge_per_cycle": 100,
+		"charge_per_cycle": 50,
 		"charge": 0,
 		"active": null,
 		"remain": 100

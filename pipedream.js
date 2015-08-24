@@ -390,7 +390,7 @@ draw_explosion(f, startx, starty, buf, n)
 	/*
 	 * Draw expanding puddle on the floor...
 	 */
-	nleak *= 96;
+	nleak *= 24;
 	y = f.f_h - 1;
 	var x = startx;
 	var xmag = 1;
@@ -832,7 +832,17 @@ state_for(s)
 
 	switch (s.type) {
 	case 'readable':
+		if (s.end) {
+			break;
+		}
+		if (s.remain === 0) {
+			s.end = true;
+			break;
+		}
 		if (s.active === null && s.buffer_out.length < s.buffer_max) {
+			if (s.remain && s.remain > 0) {
+				s.remain--;
+			}
 			s.active = {
 				s: char_gen(),
 				c: rand_col()
@@ -919,7 +929,11 @@ state_for(s)
 				payload: fr.buffer_out
 			};
 			fr.buffer_out = [];
-			s.label = 'write()';
+			if (s.func) {
+				s.label = s.func;
+			} else {
+				s.label = 'write()';
+			}
 			s.charge = 0;
 			break;
 		}
@@ -939,14 +953,30 @@ state_for(s)
 		}
 		if (s.active === null && fr.emitting) {
 			fr.emitting = false;
-			s.label = '"data"';
+			if (s.listen_for) {
+				s.label = '"' + s.listen_for + '"';
+			} else {
+				s.label = '"data"';
+			}
 			s.active = fr.active;
 			fr.active = null;
 			s.charge = 0;
 			break;
+		} else if (s.active === null && fr.buffer_out &&
+		    fr.buffer_out.length > 0) {
+			if (s.listen_for) {
+				s.label = '"' + s.listen_for + '"';
+			} else {
+				s.label = '"data"';
+			}
+			s.active = fr.buffer_out.shift();
+			s.charge = 0;
+			break;
+		} else if (s.active === null) {
+			s.label = '         ';
 		}
 		if (fr.end) {
-			s.label = '"end"';
+			s.label = '"end"    ';
 			s.end = true;
 			break;
 		}

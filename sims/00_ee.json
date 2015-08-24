@@ -3,7 +3,7 @@
 	{
 		"name": "backend",
 		"type": "eventemitter",
-		"charge_per_cycle": 33,
+		"charge_per_cycle": 20,
 		"charge": 0,
 		"active": null,
 		"remain": 16

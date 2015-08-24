@@ -1,4 +1,4 @@
-server.get('/', function (err, res, next) {
+server.get('/', function (req, res, next) {
     var backend = database.fetchData();
     var data = [];
 

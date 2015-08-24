@@ -1,24 +1,46 @@
-{ "name": "Simple Pipe; Balanced Input & Output", "sims":
+{ "name": "Simple Readable", "sims":
 [
 	{
 		"name": "input",
 		"type": "readable",
-		"charge_per_cycle": 20,
+		"charge_per_cycle": 10,
 		"charge": 0,
 		"buffer_max": 4,
 		"buffer_out": [],
-		"active": null
+		"active": null,
+                "remain": 8
 	},
 	{
-		"type": "pipe",
+		"type": "listener",
 		"from": "input",
-		"to": "output",
+		"to": "data",
 		"charge": 0,
-		"charge_per_cycle": 50,
-		"active": null
+		"charge_per_cycle": 33,
+		"active": null,
+                "listen_for": "readable"
 	},
 	{
-		"name": "output",
+		"name": "data",
+		"type": "array",
+		"charge_per_cycle": 1,
+		"charge": 100,
+                "buffer_max": 32,
+                "buffer_in": [],
+                "buffer_out": [],
+		"active": null,
+                "listen_for": "readable"
+	},
+	{
+		"type": "call",
+		"from": "data",
+		"to": "console",
+		"charge": 0,
+		"charge_per_cycle": 15,
+		"active": null,
+                "func": "log()"
+	},
+	{
+		"name": "console",
 		"type": "writable",
 		"charge_per_cycle": 20,
 		"charge": 100,
