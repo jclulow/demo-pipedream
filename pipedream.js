@@ -18,8 +18,6 @@ var FRAMES = [];
 
 var FRAME_ID = 0;
 
-var AT_COLOUR = 51;
-
 var SIM_FAILURE = false;
 var SIM_FAILFRAME = 0;
 
@@ -35,6 +33,43 @@ var TITLE_FRAME = 0;
 
 var REDRAW_PERIOD = 40;
 var STATES_PER_REDRAW = 1;
+
+
+var PALETTE_DARK = {
+	pipe_line: 0,
+	at_colour: 51,
+	class_label: 201,
+	class_status: 227,
+	joyent: 208,
+	asterisks: 45,
+	pipe_label: 195,
+	item_colours: [ 21, 27, 45, 81, 63, 98, 91, 110, 157, 133, 114, 142,
+	    202, 226, 196, 201, 182, 178, 253, 248 ],
+	title_colours: [ 19, 21, 33, 39, 45, 81, 75, 69, 63 ]
+};
+var PALETTE_LIGHT = {
+	pipe_line: 243,
+	at_colour: 51,
+	class_label: 55,
+	class_status: 202,
+	joyent: 208,
+	asterisks: 45,
+	pipe_label: 19,
+	item_colours: [ 52, 53, 19, 88, 124, 91, 235, 239, 94, 17, 28, 202,
+	    204 ],
+	// THIS _MIGHT_ BE BETTER, but who knows:
+	    // title_colours: [ 19, 21, 27, 25, 33, 69, 63, 57 ]
+	title_colours: [ 19, 21, 33, 39, 45, 81, 75, 69, 63 ]
+};
+var PALETTE = PALETTE_DARK;
+if (process.env.BG === 'light') {
+	PALETTE = PALETTE_LIGHT;
+} else if (process.env.BG === 'dark') {
+	PALETTE = PALETTE_DARK;
+} else if (process.env.BG) {
+	console.error('unknown Palette: %s', process.env.BG);
+	process.exit(1);
+}
 
 
 function
@@ -159,23 +194,22 @@ draw_string(f, x, y, st, attr, fg)
 	return (true);
 }
 
-var TITLE_COLOURS = [ 19, 21, 33, 39, 45, 81, 75, 69, 63 ];
 
 function
 draw_title_string(f, x, y, st, offs)
 {
 	mod_assert.string(st);
-	var clr = offs % TITLE_COLOURS.length;
+	var clr = offs % PALETTE.title_colours.length;
 
 	for (var i = 0; i < st.length; i++) {
 		var bg = 0;
 		if (st[i] != ' ') {
-			bg = TITLE_COLOURS[clr];
+			bg = PALETTE.title_colours[clr];
 		}
 		if (!draw_char(f, x++, y, ' ', 0, 0, bg)) {
 			return (false);
 		}
-		clr = (clr + 1) % TITLE_COLOURS.length;
+		clr = (clr + 1) % PALETTE.title_colours.length;
 	}
 
 	return (true);
@@ -218,20 +252,31 @@ setup_terminal()
 			TITLE_SCREEN = true;
 
 		} else if (key === 'r'.charCodeAt(0)) {
-			TITLE_SCREEN = false;
 			set_transition();
 			reset();
+			if (TITLE_SCREEN) {
+				if (process.env.FIRST === 'source') {
+					SHOW_SOURCE = true;
+				}
+				TITLE_SCREEN = false;
+			}
 
 		} else if (key === 'j'.charCodeAt(0)) {
 			if (TITLE_SCREEN) {
 				TITLE_SCREEN = false;
 				set_transition();
 				reset();
+				if (process.env.FIRST === 'source') {
+					SHOW_SOURCE = true;
+				}
 
 			} else if ((SIMNAMEIDX + 1) < SIMNAMES.length) {
 				SIMNAMEIDX++;
 				set_transition();
 				reset();
+				if (process.env.FIRST === 'source') {
+					SHOW_SOURCE = true;
+				}
 			}
 
 		} else if (key === 'k'.charCodeAt(0)) {
@@ -239,6 +284,9 @@ setup_terminal()
 				SIMNAMEIDX--;
 				set_transition();
 				reset();
+				if (process.env.FIRST === 'source') {
+					SHOW_SOURCE = true;
+				}
 			}
 
 		}
@@ -307,7 +355,7 @@ draw_buffer(f, x1, y1, x2, y2, name, buf, val, max)
 		occ = '   ' + val;
 	}
 	if (occ) {
-		draw_string(f, x2 - occ.length, y1 + 1, occ, 0, 227);
+		draw_string(f, x2 - occ.length, y1 + 1, occ, 0, PALETTE.class_status);
 	}
 
 	if (nleft() < 1) {
@@ -403,26 +451,27 @@ draw_pipe(f, x1, y1, x2, y2, p)
 
 	if (x1 === x2) {
 		for (var y = y1; y <= y2; y++) {
-			draw_char(f, x1, y, verti);
+			draw_char(f, x1, y, verti, false, PALETTE.pipe_line);
 		}
 		if (p.active) {
 			var y = Math.round((y2 - y1) * (atpct / 100)) + y1;
 			draw_char(f, x1, y, p.active.s, false, p.active.c);
 		}
-		draw_char(f, x2, y2, 'V');
+		draw_char(f, x2, y2, 'V', false, PALETTE.pipe_line);
 	} else if (y1 === y2) {
 		if (p.label) {
 			var lbl = p.label + '  ';
-			draw_string(f, x1 + 1, y1 + 1, lbl, false, 195);
+			draw_string(f, x1 + 1, y1 + 1, lbl, false,
+			    PALETTE.pipe_label);
 		}
 		for (var x = x1; x <= x2; x++) {
-			draw_char(f, x, y1, horiz);
+			draw_char(f, x, y1, horiz, false, PALETTE.pipe_line);
 		}
 		if (p.active) {
 			var x = Math.round((x2 - x1) * (atpct / 100)) + x1;
 			draw_char(f, x, y1, p.active.s, false, p.active.c);
 		}
-		draw_char(f, x2, y2, '>');
+		draw_char(f, x2, y2, '>', false, PALETTE.pipe_line);
 	} else {
 		throw (new Error('invalid pipe'));
 	}
@@ -451,7 +500,7 @@ sim_failure(f)
 			    y >= (sfy - pdh) && y < (sfy + 5 + pdh)) {
 				draw_char(f, x, y, ' ');
 			} else {
-				draw_char(f, x, y, ch, 0, 45);
+				draw_char(f, x, y, ch, 0, PALETTE.asterisks);
 			}
 		}
 	}
@@ -496,6 +545,8 @@ redraw()
 	var nm = SIM.name; /* SIMNAMES[SIMNAMEIDX]; */
 	if (SOURCE) {
 		nm += ' [s]';
+	} else {
+		SHOW_SOURCE = false;
 	}
 
 	if (TITLE_SCREEN) {
@@ -517,7 +568,7 @@ redraw()
 		draw_string(f, xpos, f.f_h - 3, l2);
 		var l2 = 'Joyent, Inc.';
 		xpos = f.f_w - l2.length - 3;
-		draw_string(f, xpos, f.f_h - 2, l2, 0, 208);
+		draw_string(f, xpos, f.f_h - 2, l2, 0, PALETTE.joyent);
 
 
 	} else if (TRANSITION) {
@@ -648,15 +699,15 @@ draw_transform(f, x1, y1, x2, y2, t)
 	draw_char(f, x1 + w + 4, y2, specbot);
 
 	if (t.active) {
-		draw_string(f, x1 + w + 1, y1 + 1, 'ACT', 0, 227);
-		draw_string(f, x1 + w + 1, y1 + 2, 'IVE', 0, 227);
+		draw_string(f, x1 + w + 1, y1 + 1, 'ACT', 0, PALETTE.class_status);
+		draw_string(f, x1 + w + 1, y1 + 2, 'IVE', 0, PALETTE.class_status);
 	}
 
 	if (t.name) {
 		draw_string(f, x1 + 1, y1, ' ' + t.name + ' ');
 	}
 
-	draw_string(f, x1 + 1, y2, 'Transform', false, 201);
+	draw_string(f, x1 + 1, y2, 'Transform', false, PALETTE.class_label);
 }
 
 function
@@ -668,10 +719,10 @@ draw_writable(f, x1, y1, x2, y2, w)
 	}
 
 	draw_buffer(f, x1, y1, x2, y2, w.name, w.buffer_in, w.buffer_in.length, w.buffer_max);
-	draw_string(f, x1 + 1, y2, s, false, 201);
+	draw_string(f, x1 + 1, y2, s, false, PALETTE.class_label);
 	draw_pipe(f, x2 - 1, y2 + 1, x2 - 1, y2 + 4, w);
 	draw_string(f, x2 - 6, y2 + 3, 'sink');
-	draw_string(f, x2 - 8, y2 + 1, w.active ? 'ACTIVE' : '      ', 0, 227);
+	draw_string(f, x2 - 8, y2 + 1, w.active ? 'ACTIVE' : '      ', 0, PALETTE.class_status);
 }
 
 function
@@ -682,17 +733,17 @@ draw_readable(f, x1, y1, x2, y2, r)
 	if (x2 - x1 - 2 < 'Readable'.length) {
 		s = 'Rdble';
 	}
-	draw_string(f, x1 + 1, y2, s, false, 201);
+	draw_string(f, x1 + 1, y2, s, false, PALETTE.class_label);
 	draw_pipe(f, x1 + 3, y1 - 4, x1 + 3, y1 - 1, r);
 	draw_string(f, x1 + 5, y1 - 4, 'source');
-	draw_string(f, x1 + 5, y1 - 1, (r.active && r.charge < 100) ? 'ACTIVE' : '      ', 0, 227);
+	draw_string(f, x1 + 5, y1 - 1, (r.active && r.charge < 100) ? 'ACTIVE' : '      ', 0, PALETTE.class_status);
 }
 
 function
 draw_eventemitter(f, x1, y1, x2, y2, ee)
 {
 	draw_buffer(f, x1, y1, x2, y2, ee.name, []);
-	draw_string(f, x1 + 1, y2, 'EvtEmtr', false, 201);
+	draw_string(f, x1 + 1, y2, 'EvtEmtr', false, PALETTE.class_label);
 	draw_pipe(f, x1 + 3, y1 - 4, x1 + 3, y1 - 1, ee);
 	draw_string(f, x1 + 4, y1 - 4, 'source');
 }
@@ -704,7 +755,7 @@ draw_array(f, x1, y1, x2, y2, a)
 		sim_explosion(x1 + 5, y2, a.buffer_in);
 		return;
 	}
-	draw_string(f, x1 + 1, y2, 'Array', false, 201);
+	draw_string(f, x1 + 1, y2, 'Array', false, PALETTE.class_label);
 }
 
 function
@@ -724,8 +775,6 @@ find_sim(name)
 var SEQ = make_seq();
 var SEQPOS = 0;
 
-var COL = [ 21, 27, 45, 81, 63, 98, 91, 110, 157, 133, 114, 142, 202, 226,
-    196, 201, 182, 178, 253, 248 ];
 
 var LASTCOL = -1;
 function
@@ -734,14 +783,14 @@ rand_col()
 	var idx;
 
 	for (;;) {
-		idx = Math.floor(Math.random() * COL.length);
+		idx = Math.floor(Math.random() * PALETTE.item_colours.length);
 
 		if (idx !== LASTCOL)
 			break;
 	}
 
 	LASTCOL = idx;
-	return (COL[idx]);
+	return (PALETTE.item_colours[idx]);
 }
 
 function
@@ -866,7 +915,7 @@ state_for(s)
 		if (s.active === null && fr.buffer_out.length > 0) {
 			s.active = {
 				s: '@',
-				c: AT_COLOUR,
+				c: PALETTE.at_colour,
 				payload: fr.buffer_out
 			};
 			fr.buffer_out = [];
