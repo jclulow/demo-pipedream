@@ -1,5 +1,9 @@
 # pipedream
 
+![screenshot of pipedream](https://us-east.manta.joyent.com/jmc/public/images/pipedream.gif)
+
+## Operation
+
 The `j` and `k` keys move forwards and backwards through the deck.
 
 The `r` key will reset the current animation.  The `s` key will show the demo
