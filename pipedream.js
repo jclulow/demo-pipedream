@@ -238,6 +238,10 @@ setup_terminal()
 	term.cursor(false);
 
 	term.on('keypress', function (key) {
+		var kpinsource = (SHOW_SOURCE &&
+		    (key === 'j'.charCodeAt(0) ||
+		    key === 'k'.charCodeAt(0)));
+
 		if (key === 'q'.charCodeAt(0)) {
 			TERM.clear();
 			TERM.moveto(1, 1);
@@ -251,7 +255,7 @@ setup_terminal()
 		} else if (key === 't'.charCodeAt(0)) {
 			TITLE_SCREEN = true;
 
-		} else if (key === 'r'.charCodeAt(0)) {
+		} else if (kpinsource || key === 'r'.charCodeAt(0)) {
 			set_transition();
 			reset();
 			if (TITLE_SCREEN) {
@@ -531,6 +535,9 @@ width_factor(type)
 function
 width_total(sim)
 {
+	if (sim.length === 0) {
+		return (0);
+	}
 	return (sim.map(function (s) {
 		return (width_factor(s.type));
 	}).reduce(function (a, b) {

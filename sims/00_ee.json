@@ -31,7 +31,7 @@
 		"from": "data",
 		"to": "res",
 		"charge": 0,
-		"charge_per_cycle": 15,
+		"charge_per_cycle": 10,
 		"active": null
 	},
 	{
